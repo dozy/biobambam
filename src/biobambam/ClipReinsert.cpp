@@ -27,6 +27,10 @@ bool clipReinsert(
 	std::stack < libmaus::bambam::cigar_operation > & hardstack
 )
 {
+        libmaus::bambam::BamAuxFilterVector auxfilter;
+        auxfilter.set("qs");
+        auxfilter.set("qq");
+
 	uint64_t const numaux = algn.enumerateAuxTags(auxtags);
 	for ( uint64_t i = 0; i < numaux; ++i )
 		bafv.set(auxtags[i].first,auxtags[i].second);
@@ -86,6 +90,8 @@ bool clipReinsert(
 			algn.replaceSequence(read + qs, qual + qq);
 		else
 			algn.replaceSequence( libmaus::fastx::reverseComplementUnmapped(qs) + read, std::string(qq.rbegin(),qq.rend()) + qual);
+
+		algn.filterOutAux(auxfilter);
 	}
 
 	for ( uint64_t i = 0; i < numaux; ++i )
